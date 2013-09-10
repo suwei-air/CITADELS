@@ -5,6 +5,6 @@ The first phrase of this project is planed to be completed before new year of 20
 
 Goals:
 
-    [ ] Design - September
+    [x] Design - September
     [ ] Coding - October to November
     [ ] Testing - December
