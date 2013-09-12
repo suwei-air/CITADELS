@@ -1,10 +1,22 @@
 <!doctype>
 <html>
 <head>
+	<script type="text/javascript">
+	function check(id)
+	{
+		id.value="testuser";
+	}
+	</script>
 </head>
 <body>
 	<form>
-	Username:<input type="text" name="username" />
+	Username:
+	<input 
+	type="text" 
+	name="username" 
+	autofocus="autofocus"
+	onblur="check(this)"
+	/>
 	</form>
 </body>
 </html>
