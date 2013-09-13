@@ -1,0 +1,16 @@
+body{
+	background-image: url("../images/bgpic.jpg");
+}
+
+div.transbox{
+	margin: 60px;
+  	background-color: #ffffff;
+  	border: 1px solid black;
+  	/* for IE */
+  	filter:alpha(opacity=30);
+ 	/* CSS3 standard */
+  	opacity:0.3;
+}
+form{
+	margin: 30px;
+}
