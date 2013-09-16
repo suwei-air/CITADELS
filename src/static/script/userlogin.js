@@ -1,4 +1,7 @@
-function check(id)
-	{
-		id.value="testuser";
-	}
+
+function check(id){
+	id.value="testuser";
+}
+
+function selectroom(){
+}
