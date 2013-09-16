@@ -8,3 +8,4 @@ Goals:
     [x] Design - September
     [ ] Coding - October to November
     [ ] Testing - December
+
