@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/userlogin.css" />
+	<script type="text/javascript" src="/javascripts/userlogin.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js"></script>
+</head>
+<body>
+	<div class="transbox">
+		<form>
+		Username:
+		<input 
+		type="text" 
+		name="username" 
+		autofocus="autofocus"
+		onblur="check(this)"
+		/>
+		</form>
+		<table>
+			<tr>
+			<td>Room</td><td>Time</td><td>Player</td>
+			</tr>
+			<tr onclick="selectroom()">
+			<td >testroom</td><td>10s</td><td>5/8</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>
+
