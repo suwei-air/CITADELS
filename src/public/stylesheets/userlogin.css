@@ -21,26 +21,20 @@ form, #table1, #info{
 	border: 5px solid white;
 	border-radius: 15px;
 	-moz-border-radius: 15px;
-	position: absolute;
+	float: left;
 }
 form{
 	width: 400px;
 	height: 30px;
-	left: 0;
-	top: 0;
 }
 #table1{
 	width: 400px;
 	height: 300px;
-	margin-top: 0;
-	left: 0;
-	top: 150px;
 }
 #info{
-	width: 200px;
+	width: 180px;
 	height: 420px;
-	left: 490px;
-	top: 0px;
+	float: right;
 }
 a {
 	position: relative;
