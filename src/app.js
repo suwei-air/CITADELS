@@ -31,8 +31,8 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
-app.get('/test', function(req, res){
-  res.render('test');
+app.get('/room-list', function(req, res){
+  res.render('room-list');
 });
 app.get('/users', user.list);
 
