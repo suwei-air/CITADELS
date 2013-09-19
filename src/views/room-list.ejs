@@ -8,41 +8,47 @@
 	<script type="text/javascript" src="/javascripts/room-list.js"></script>
 </head>
 <body>
-	<div id="transbox">
-		<form id="username">
-		玩家昵称：
-		<input 
-		type="text" 
-		name="username" 
-		autofocus="autofocus"
-		onblur="check(this)"
-		/>
+	<div id="wrap">
+		<form id="username-form">
+			<label for="username">玩家昵称：</label>
+			<input type="text" id="username" name="username" placeholder="昵称" autofocus="autofocus" maxlength="10" />
+			<input type="submit" value="确认昵称" />
 		</form>
 
-		<div id="info">
+		<div id="intro">
 			<h1>富饶之城</h1>
 			<p>富饶之城是个评价五星级的策略游戏，目的是建筑七个以上的城镇并获得最高分，每回合选择的角色均有特殊效力，可让玩家获得更多的金币或是享有特权，以建造更多更高分的富饶之城。期间您必须猜测对手的想法和对方的角色选择。</p>
 		</div>
 
-		<div id="table1">
-		<table>
-			<tr>
-			<td>Room</td><td>Time</td><td>Player</td>
-			</tr>
-			<tr>
-			<td>testroom</td><td>10s</td><td>5/8</td>
-			</tr>
-		</table>
-		</div>
-
-		<a href="http://baike.baidu.com/link?url=lNpKhctqvEPyJafyI1k0_d1MUiwR9of5SsV6_ggxPQdh0j275ALy2h_dVD-cD8w8"
-		target="_blank">游戏帮助</a>
-
-		<form>
+		<div id="rooms">
+			<table id="room-table">
+				<thead>
+					<tr>
+						<td class="td-room-name">Room</td><td class="td-timeout">Time</td><td class="td-players">Player</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr id="room0">
+						<td class="td-room-name">testroom</td><td class="td-timeout">10s</td><td class="td-players">5/8</td>
+					</tr>
+					<tr id="room1">
+						<td class="td-room-name">testroom</td><td class="td-timeout">10s</td><td class="td-players">5/8</td>
+					</tr>
+					<tr id="room2">
+						<td class="td-room-name"></td><td class="td-timeout"></td><td class="td-players"></td>
+					</tr>
+					<tr id="room3">
+						<td class="td-room-name"></td><td class="td-timeout"></td><td class="td-players"></td>
+					</tr>
+					<tr id="room4">
+						<td class="td-room-name"></td><td class="td-timeout"></td><td class="td-players"></td>
+					</tr>
+				</tbody>
+			</table>
 			<input type="button" value="创建游戏">
-			<input type="button" value="加入游戏">
 			<input type="button" value="快速加入">
-		</form>
+		</div>
+		<div></div>
 	</div>
 </body>
 </html>

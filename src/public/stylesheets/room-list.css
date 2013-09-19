@@ -1,46 +1,61 @@
 body{
 	background-image: url("../images/bgpic.jpg");
 	color: white;
+	margin: 0;
 }
 
-#transbox{
-	width: 800px;
-	height: 600px;
+#wrap{
+	width: 960px;
 	margin: auto;
-  	background-color: #000000;
-  	border: 1px solid black;
+	background-color: rgba(0, 0, 0, 0.6);
+	display: table;
+/*  	border: 1px solid black;*/
   	/* for IE */
-  	filter:alpha(opacity=60);
+/*  	filter:alpha(opacity=60);*/
  	/* CSS3 standard */
-  	opacity:0.6;
+/*  	opacity:0.6;*/
 }
-#username, #table1, #info{
+#username-form, #rooms, #intro{
 	display: block;
-	margin: 30px;
-	padding: 20px 20px;
-	border: 5px solid white;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
+	margin: 15px;
+	padding: 12px;
+	border: 3px solid white;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
 }
-#username{
-	width: 400px;
-	height: 30px;
+#username-form{
+	width: 600px;
 	float: left;
 }
-#table1{
-	width: 400px;
+#rooms{
+	width: 600px;
 	height: 300px;
-	margin-top: 0;
 	float: left;
 }
-#info{
-	width: 200px;
-	height: 410px;
+#intro{
+	width: 240px;
 	float: right;
-	margin-left: 0;
+	height: 385px;
 }
-a {
-	float: right;
+#room-table{
+	text-align: center;
+	width: 100%;
+	border-collapse: collapse;
 }
-#test{
+.td-room-name{
+	text-align: left;
+	width: 70%;
+}
+.td-timeout{
+	width: 10%;
+}
+.td-players{
+	width: 20%;
+}
+#room-table tr > td{
+	height: 1em;
+	padding: 0.5em;
+}
+#room-table > tbody > tr:hover{
+	background-color: rgb(100, 100, 100);
 }
