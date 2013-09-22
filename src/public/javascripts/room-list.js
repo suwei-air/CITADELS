@@ -10,7 +10,8 @@ $(document).ready(function(){
 	$("#room-table tr").click(function(){
 		//$(this).children().css("background-color","red");
 		alert("click");
-		$(this).css("background-color","red");
+		$("#room-table tr").css("background-color","");
+		$(this).css("background-color","rgb(50,50,50)");
 	});
 
 
