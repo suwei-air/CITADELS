@@ -1,9 +1,12 @@
 $(document).ready(function(){
+	var connection = io.connect("http://localhost");
+
 	$("input#username").blur(function(){
 		//$(this).val("testuser");
 	});
 	$("#username-form").submit(function(){
-		alert("your name is '" + $("input#username").val() + "'.");
+		connection.emit('commit-username', $("input#username").val());
+		//alert("your name is '" + $("input#username").val() + "'.");
 		return false;
 	});
 	$("#room-table tr").click(function(){
@@ -11,7 +14,12 @@ $(document).ready(function(){
 		$(this).css("background-color","rgb(50,50,50)");
 	});
 
-	var connection = io.connect("http://localhost");
+	connection.on('commit-username', function(result, message){
+		//if (result === true) {}
+		//else {}
+		alert(message);
+	});
+
 	connection.on('room-list', function(rooms){
 		var room_id = 0;
 		for (var i = 0; i<rooms.length; ++i){
