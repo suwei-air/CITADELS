@@ -14,10 +14,11 @@ $(document).ready(function(){
 		$(this).css("background-color","rgb(50,50,50)");
 	});
 
-	connection.on('commit-username', function(result, message){
+	connection.on('commit-username', function(data){
+		console.log("result=" + data.result);
+		console.log("message=" + data.message);
 		//if (result === true) {}
 		//else {}
-		alert(message);
 	});
 
 	connection.on('room-list', function(rooms){
