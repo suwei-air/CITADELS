@@ -60,7 +60,7 @@ io.on('connection', function(socket){
         break;
       }
     }
-    if (i === users.length){
+    if (i != users.length){
       socket.emit('commit-username', {
         "result": false,
         "message": "Username '" + username + "' already in use!"
@@ -74,7 +74,7 @@ io.on('connection', function(socket){
       });
     }
   });
-  
+
   socket.on('disconnect', function(){
     console.log('on disconnect: cid=' + cid);
   });
