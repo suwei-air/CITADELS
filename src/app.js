@@ -8,6 +8,7 @@ var routes = require('./routes');
 var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
+var sio = require('socket.io');
 
 var app = express();
 
@@ -36,6 +37,45 @@ app.get('/room-list', function(req, res){
 });
 app.get('/users', user.list);
 
-http.createServer(app).listen(app.get('port'), function(){
+var server = http.createServer(app);
+server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
+});
+
+var io = sio.listen(server);
+var users = [];
+var rooms = [
+  {"name": "first room", "timeout": 30, "players": 5, "seats": 8},
+  {"name": "second room", "timeout": 15, "players": 3, "seats": 8}
+];
+io.on('connection', function(socket){
+  var cid = socket.id;
+  console.log('on connection: cid=' + cid);
+  socket.emit('room-list', rooms);
+
+  socket.on('commit-username', function(username){
+    var i = 0;
+    for (i = 0; i<users.length; ++i){
+      if (username === users[i].username){
+        break;
+      }
+    }
+    if (i === users.length){
+      socket.emit('commit-username', {
+        "result": false,
+        "message": "Username '" + username + "' already in use!"
+      });
+    }
+    else{
+      users.push({"username": username, "connection": socket});
+      socket.emit('commit-username', {
+        "result": true,
+        "message": "Username '" + username + "' confirmed."
+      });
+    }
+  });
+  
+  socket.on('disconnect', function(){
+    console.log('on disconnect: cid=' + cid);
+  });
 });

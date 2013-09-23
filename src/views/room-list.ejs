@@ -5,6 +5,7 @@
 	<title>富饶之城</title>
 	<link rel="stylesheet" type="text/css" href="/stylesheets/room-list.css" />
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js"></script>
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript" src="/javascripts/room-list.js"></script>
 </head>
 <body>
@@ -45,8 +46,8 @@
 					</tr>
 				</tbody>
 			</table>
-			<input type="button" value="创建游戏">
-			<input type="button" value="快速加入">
+			<input id="create-room" type="button" value="创建游戏">
+			<input id="quick-start" type="button" value="快速加入">
 		</div>
 		<div></div>
 	</div>

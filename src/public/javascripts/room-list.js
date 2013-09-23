@@ -14,7 +14,7 @@ $(document).ready(function(){
 	var connection = io.connect("http://localhost");
 	connection.on('room-list', function(rooms){
 		var room_id = 0;
-		for (var i in rooms){
+		for (var i = 0; i<rooms.length; ++i){
 			var room = rooms[i];
 			console.log(room.name);
 			var element = $("#room" + room_id);
