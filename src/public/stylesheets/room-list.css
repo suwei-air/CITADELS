@@ -1,21 +1,22 @@
+html{
+	height: 100%;
+}
 body{
 	background-image: url("../images/bgpic.jpg");
 	color: white;
+	height: 100%;
 	margin: 0;
+	display: table;
 }
-
 #wrap{
-	width: 960px;
+	width: 100%;
+	min-width: 1200px;
 	margin: auto;
 	background-color: rgba(0, 0, 0, 0.6);
-	display: table;
-/*  	border: 1px solid black;*/
-  	/* for IE */
-/*  	filter:alpha(opacity=60);*/
- 	/* CSS3 standard */
-/*  	opacity:0.6;*/
+	display: table-cell;
+	vertical-align: middle;
 }
-#username-form, #rooms, #intro{
+#username-form, #rooms, #intro, .dialog{
 	display: block;
 	margin: 15px;
 	padding: 12px;
@@ -24,16 +25,19 @@ body{
 	-moz-border-radius: 10px;
 }
 #username-form{
-	width: 600px;
+	width: 60%;
+	min-width: 600px;
 	float: left;
 }
 #rooms{
-	width: 600px;
+	width: 60%;
+	min-width: 600px;
 	height: 300px;
 	float: left;
 }
 #intro{
-	width: 240px;
+	width: 30%;
+	min-width: 240px;
 	float: right;
 	height: 385px;
 }
@@ -59,11 +63,37 @@ body{
 #room-table > tbody > tr:hover{
 	background-color: rgb(100, 100, 100);
 }
+/*
 #create-opt{
 	position:absolute;
 	top:0;
 	left:0;
+	width: 100%;
+	height: 100%;
 	z-index:2;
 	visibility:hidden;
 	width:680px;
+}
+*/
+.dialog-wrap{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: table;
+	visibility: hidden;
+}
+.dialog-center{
+	background-color: rgba(0, 0, 0, 0.8);
+	display: table-cell;
+	vertical-align: middle;
+	width: 100%;
+	height: 100%;
+	text-align: center;	
+}
+.dialog{
+	display: inline-block;
+	width: 500px;
+	margin: auto;
 }

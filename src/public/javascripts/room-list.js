@@ -15,7 +15,7 @@ $(document).ready(function(){
 		var styleStr="top:0px;left:0px;position:absolute;z-index:1;background:#666;width:"+bWidth+"px;height:"+bHeight+"px;";
 		styleStr+=(isIe)?"filter:alpha(opacity=70);":"opacity:0.7;";
 		back.style.cssText=styleStr;
-		document.bobjId.appendChild(back);
+		bobjId.appendChild(back);
     	objId.style.left=sWidth+"px";
 		objId.style.top=sHeight+"px";
 		objId.style.visibility="visible";
@@ -39,21 +39,22 @@ $(document).ready(function(){
 		return false;
 	});
 
-	$("#room-table tr").click(function(){
+	$("#room-table tbody tr").click(function(){
 		$("#room-table tr").css("background-color","");
 		$(this).css("background-color","rgb(50,50,50)");
 	});
 
 	$("#create-room").click(function(){
-		shown("create-opt");
+		//shown("create-opt");
+		$(".dialog-wrap").css("visibility", "visible");
 	});
-
 	$("#opt-cancel").click(function(){
-		shut("create-opt");
+		//shut("create-opt");
+		$(".dialog-wrap").css("visibility", "hidden");
 	});
-
-	$("#opt-ok").click(function(){
+	$("#create-opt").submit(function(){
 		//connection.emit('commit-newroom',);
+		return false;
 	});
 
 	connection.on('commit-username', function(data){
