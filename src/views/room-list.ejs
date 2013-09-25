@@ -46,10 +46,34 @@
 					</tr>
 				</tbody>
 			</table>
-			<input id="create-room" type="button" value="创建游戏">
-			<input id="quick-start" type="button" value="快速加入">
+			<input id="create-room" type="button" value="创建游戏" />
+			<input id="quick-start" type="button" value="快速加入" />
 		</div>
 		<div></div>
+
+		<div id="create-opt">
+			<lable for="opt-room-name">房间名：</lable>
+			<input type="text" id="opt-room-name" name="opt-room-name" />
+	
+			<lable for="opt-timeout">等待时间：</lable>
+			<select name="opt-timeout" id="opt-timeout">
+				<option value="5">5s</option>
+				<option value="10">10s</option>
+				<option value="15" selected="selected">15s</option>
+				<option value="20">20s</option>
+				<option value="30">30s</option>
+			</select>
+	
+			<lable for="opt-maxbuilding">最大建筑数：</lable>
+			<select name="opt-maxbuilding" id="opt-maxbuilding">
+				<option value="7">7</option>
+				<option value="8" selected="selected">8</option>
+				<option value="9">9</option>
+			</select>
+	
+			<input type="button" id="opt-ok" value="创建" />
+			<input type="button" id="opt-cancel" value="取消" />
+		</div>
 	</div>
 </body>
 </html>
