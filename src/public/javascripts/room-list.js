@@ -11,11 +11,6 @@ $(document).ready(function(){
 		return false;
 	});
 
-	$("#room-table tbody tr").click(function(){
-		$("#room-table tr").css("background-color","");
-		$(this).css("background-color","rgb(50,50,50)");
-	});
-
 	$("#create-room").click(function(){
 		$(".dialog-wrap").css("visibility", "visible");
 	});
@@ -34,14 +29,27 @@ $(document).ready(function(){
 		return false;
 	});
 
+	connection.on('username', function(data){
+		console.log(data);
+		$("input#username").val(data);
+	});
+
 	connection.on('commit-username', function(data){
-		console.log("result=" + data.result);
-		console.log("message=" + data.message);
-		//if (result === true) {}
-		//else {}
+		console.log(data);
+		if (data.result === true) {
+			$("#username-form input[type='submit']").css("visibility", "hidden");
+			$("input#username").attr("readonly", "readonly")
+				.attr("disabled", "disabled")
+				.removeClass("input-invalid");
+		}
+		else {
+			alert(data.message);
+			$("input#username").addClass("input-invalid").focus().select();
+		}
 	});
 
 	connection.on('room-list', function(rooms){
+		$("#room-table tbody tr").unbind("click"); // Clear click event of each room
 		var room_id = 0;
 		for (var i = 0; i<rooms.length; ++i){
 			var room = rooms[i];
@@ -51,6 +59,11 @@ $(document).ready(function(){
 			$(element).children(".td-timeout").html(room.timeout + " s");
 			$(element).children(".td-maxbuilding").html(room.maxbuilding);
 			$(element).children(".td-players").html(room.players + "/" + room.seats);
+			// add click event for room which has content
+			$(element).click(function(){
+				$("#room-table tr").css("background-color","");
+				$(this).css("background-color","rgb(50,50,50)");
+			});
 			++room_id;
 			if (room_id > 4){
 				break;
