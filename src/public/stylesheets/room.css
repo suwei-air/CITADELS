@@ -1,0 +1,36 @@
+#show-players, #chat-dialog{
+	display: block;
+	margin: 15px;
+	padding: 12px;
+	border: 3px solid white
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	width: 100%;
+	min-width: 600px;
+}
+
+#show-players{
+	height: 600px;
+}
+
+#chat-dialog{
+	height: 150px;
+}
+
+#show-players ul{
+	display: inline;
+}
+
+#show-players ul li{
+	display: block;
+	margin: 9px;
+	padding: 0px;
+	border: 1px solid white;
+	width: 22%;
+	min-width: 150px;
+}
+
+#show-players ul li img{
+	margin: 0px;
+	padding: 0px;
+}
