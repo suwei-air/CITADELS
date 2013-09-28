@@ -35,6 +35,9 @@ app.get('/', routes.index);
 app.get('/room-list', function(req, res){
   res.render('room-list');
 });
+app.get('/room', function(req, res){
+  res.render('room');
+});
 app.get('/users', user.list);
 
 var server = http.createServer(app);
