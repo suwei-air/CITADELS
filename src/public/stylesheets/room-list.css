@@ -48,9 +48,12 @@ body{
 }
 .td-room-name{
 	text-align: left;
-	width: 70%;
+	width: 60%;
 }
 .td-timeout{
+	width: 10%;
+}
+.td-maxbuilding{
 	width: 10%;
 }
 .td-players{

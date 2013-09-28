@@ -45,8 +45,8 @@ server.listen(app.get('port'), function(){
 var io = sio.listen(server);
 var users = [];
 var rooms = [
-  {"name": "first room", "timeout": 30, "players": 5, "seats": 8},
-  {"name": "second room", "timeout": 15, "players": 3, "seats": 8}
+  {"name": "first room", "timeout": 30, "maxbuilding":8, "players": 5, "seats": 8},
+  {"name": "second room", "timeout": 15, "maxbuilding":9, "players": 3, "seats": 8}
 ];
 io.on('connection', function(socket){
   var cid = socket.id;
@@ -73,6 +73,11 @@ io.on('connection', function(socket){
         "message": "Username '" + username + "' confirmed."
       });
     }
+  });
+
+  socket.on('commit-newroom',function(newroom){
+    rooms.push(newroom);
+    socket.emit('room-list',rooms);
   });
 
   socket.on('disconnect', function(){
