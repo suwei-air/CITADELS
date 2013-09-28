@@ -89,3 +89,6 @@ body{
 	width: 500px;
 	margin: auto;
 }
+.input-invalid{
+	border-color: red;
+}
