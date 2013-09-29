@@ -18,7 +18,7 @@
 }
 
 #show-players ul{
-	display: block;
+	display: table;
 	width: 600px;
 }
 
