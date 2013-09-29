@@ -2,10 +2,10 @@
 	display: block;
 	margin: 15px;
 	padding: 12px;
-	border: 3px solid white
+	border: 3px solid white;
 	border-radius: 10px;
 	-moz-border-radius: 10px;
-	width: 100%;
+	/*width: 100%;*/
 	min-width: 600px;
 }
 
@@ -18,16 +18,18 @@
 }
 
 #show-players ul{
-	display: inline;
+	display: block;
+	width: 600px;
 }
 
 #show-players ul li{
 	display: block;
+	float: left;
 	margin: 9px;
 	padding: 0px;
 	border: 1px solid white;
-	width: 22%;
-	min-width: 150px;
+	width: 126px;
+	/*min-width: 150px;*/
 }
 
 #show-players ul li img{
