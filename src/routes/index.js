@@ -8,6 +8,8 @@ exports.index = function(req, res){
 };
 
 exports.roomlist = function(req, res){
+  req.session.name = 'JUSTaNAME';
+  console.log('in express, session.name=' + req.session.name);
   res.render('room-list');
 };
 

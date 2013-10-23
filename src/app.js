@@ -5,6 +5,10 @@ var sio = require('socket.io');
 var routes = require('./routes');
 var user = require('./routes/user');
 var sioConnection = require('./sio/connection').connection;
+var sioAuthorization = require('./sio/authorization').authorization;
+
+global.sessionStore = new express.session.MemoryStore({reapInterval: 60000 * 10});
+global.SECRET = 'CITADELS';
 
 var app = express();
 
@@ -16,8 +20,12 @@ app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
-app.use(express.cookieParser('CITADELS'));
-app.use(express.session());
+app.use(express.cookieParser());
+app.use(express.session({
+  store: global.sessionStore,
+  key: 'sid',
+  secret: global.SECRET
+}));
 app.use(app.router);
 app.use(require('stylus').middleware(__dirname + '/public'));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -43,4 +51,6 @@ global.rooms = [
   {"name": "first room", "timeout": 30, "maxbuilding":8, "players": 5, "seats": 8},
   {"name": "second room", "timeout": 15, "maxbuilding":9, "players": 3, "seats": 8}
 ];
+
+io.set('authorization', sioAuthorization);
 io.on('connection', sioConnection);
