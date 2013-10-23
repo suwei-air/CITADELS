@@ -8,6 +8,8 @@
   "dependencies": {
     "express": "3.4.0",
     "ejs": "*",
-    "stylus": "*"
+    "stylus": "*",
+    "connect": "2.9.0",
+    "socket.io": "0.9.16"
   }
 }
