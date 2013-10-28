@@ -29,11 +29,6 @@ $(document).ready(function(){
 		return false;
 	});
 
-	connection.on('username', function(data){
-		console.log(data);
-		$("input#username").val(data);
-	});
-
 	connection.on('commit-username', function(data){
 		console.log(data);
 		if (data.result === true) {

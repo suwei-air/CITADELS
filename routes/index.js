@@ -1,16 +1,17 @@
-
-/*
- * GET home page.
- */
+var isUsernameValid = require('../sio/user').isUsernameValid;
 
 exports.index = function(req, res){
   res.render('index');//, { title: '富饶之城' });
 };
 
 exports.roomlist = function(req, res){
-  req.session.name = 'JUSTaNAME';
-  console.log('in express, session.name=' + req.session.name);
-  res.render('room-list');
+  if (typeof(req.session.name)=='undefined'){
+    // Generate username
+    var usernameNum = 0;
+    for (usernameNum; !isUsernameValid("玩家" + usernameNum); ++usernameNum){}
+    req.session.name = '玩家' + usernameNum;
+  }
+  res.render('room-list', { username: req.session.name });
 };
 
 exports.room = function(req, res){
