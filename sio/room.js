@@ -10,3 +10,7 @@ exports.init = function(){
 exports.getList = function(){
   return rooms;
 };
+
+exports.add = function(newroom){
+  rooms.push(newroom);
+};

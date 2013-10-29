@@ -37,7 +37,7 @@ exports.connection = function(socket){
   });
 
   socket.on('commit-newroom',function(newroom){
-    rooms.push(newroom);
+    room.add(newroom);
     socket.emit('room-list', room.getList());
   });
 
