@@ -15,6 +15,9 @@ exports.roomlist = function(req, res){
 };
 
 exports.room = function(req, res){
+  if (typeof(req.session.name)=='undefined'){
+    res.redirect('room-list');
+  }
   console.log('Enter room[id=' + req.query.id + '].');
   res.render('room');
 };
