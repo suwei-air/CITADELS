@@ -1,11 +1,20 @@
-exports.isUsernameValid = function isUsernameValid(username){
+var users = [];
+exports.init = function(){
+  users = [];
+};
+
+exports.getList = function(){
+  return users;
+};
+
+exports.isUsernameValid = function(username, socket){
   var i = 0;
-  for (i = 0; i<global.users.length; ++i){
-    if (username == global.users[i].username){
+  for (i = 0; i<users.length; ++i){
+    if (username == users[i].username){
       break;
     }
   }
-  if (i != global.users.length){
+  if (i != users.length && users[i].connection != socket){
     return false;
   }
   else{
@@ -13,12 +22,22 @@ exports.isUsernameValid = function isUsernameValid(username){
   }
 };
 
-exports.putUsername = function putUsername(socket, username){
+exports.putUsername = function(username, socket){
   var i = 0;
-  for (i = 0; i<global.users.length; ++i){
-    if (socket === global.users[i].connection){
+  for (i = 0; i<users.length; ++i){
+    if (socket === users[i].connection){
       break;
     }
   }
-  global.users[i] = {"username": username, "connection": socket};
+  users[i] = {"username": username, "connection": socket};
+};
+
+exports.remove = function(socket){
+  var i = 0;
+  for (i = 0; i<users.length; ++i){
+    if (socket === users[i].connection){
+      break;
+    }
+  }
+  users.splice(i, 1);
 };

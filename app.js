@@ -3,7 +3,9 @@ var http = require('http');
 var path = require('path');
 var sio = require('socket.io');
 var routes = require('./routes');
-var user = require('./routes/user');
+
+var user = require('./sio/user');
+var room = require('./sio/room');
 var sioConnection = require('./sio/connection').connection;
 var sioAuthorization = require('./sio/authorization').authorization;
 
@@ -38,7 +40,10 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/room-list', routes.roomlist);
 app.get('/room', routes.room);
-app.get('/users', user.list);
+
+// init user and room
+user.init();
+room.init();
 
 var server = http.createServer(app);
 server.listen(app.get('port'), function(){
@@ -46,11 +51,5 @@ server.listen(app.get('port'), function(){
 });
 
 var io = sio.listen(server);
-global.users = [];
-global.rooms = [
-  {"name": "first room", "timeout": 30, "maxbuilding":8, "players": 5, "seats": 8},
-  {"name": "second room", "timeout": 15, "maxbuilding":9, "players": 3, "seats": 8}
-];
-
 io.set('authorization', sioAuthorization);
 io.on('connection', sioConnection);

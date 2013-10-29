@@ -1,5 +1,5 @@
-var isUsernameValid = require('./user').isUsernameValid,
-  putUsername = require('./user').putUsername;
+var user = require('./user');
+var room = require('./room');
 
 // update session data
 function setSession(sid, session){
@@ -10,25 +10,23 @@ exports.connection = function(socket){
   var cid = socket.id;
   var session = socket.handshake.session;
   console.log('welcome ' + session.name + '[cid=' + cid + ', sid=' + socket.handshake.cookies['sid'] + ']');
-  //console.log(global.users);
 
   // boradcast room-list
-  socket.emit('room-list', global.rooms);
+  socket.emit('room-list', room.getList());
 
   // combine the socket to the username
-  putUsername(socket, session.name);
+  user.putUsername(session.name, socket);
 
   socket.on('commit-username', function(username){
-    console.log(global.users);
     console.log("cid=" + cid + ", request username=" + username);
-    if (!isUsernameValid(username)){
+    if (!user.isUsernameValid(username, socket)){
       socket.emit('commit-username', {
         "result": false,
         "message": "Username '" + username + "' already in use!"
       });
     }
     else{
-      putUsername(socket, username);
+      user.putUsername(username, socket);
       socket.emit('commit-username', {
         "result": true,
         "message": "Username '" + username + "' confirmed."
@@ -40,19 +38,11 @@ exports.connection = function(socket){
 
   socket.on('commit-newroom',function(newroom){
     rooms.push(newroom);
-    socket.emit('room-list', global.rooms);
+    socket.emit('room-list', room.getList());
   });
 
   socket.on('disconnect', function(){
-    console.log('on disconnect: cid=' + cid);
-    var i = 0;
-    for (i = 0; i<global.users.length; ++i){
-      if (socket === global.users[i].connection){
-        break;
-      }
-    }
-    global.users.splice(i, 1);
+    user.remove(socket);
     console.log('goodbye ' + session.name + '[cid=' + cid + ', sid=' + socket.handshake.cookies['sid'] + ']');
-    //console.log(global.users);
   });
 };

@@ -8,7 +8,7 @@ exports.roomlist = function(req, res){
   if (typeof(req.session.name)=='undefined'){
     // Generate username
     var usernameNum = 0;
-    for (usernameNum; !isUsernameValid("玩家" + usernameNum); ++usernameNum){}
+    for (usernameNum; !isUsernameValid("玩家" + usernameNum, null); ++usernameNum){}
     req.session.name = '玩家' + usernameNum;
   }
   res.render('room-list', { username: req.session.name });
