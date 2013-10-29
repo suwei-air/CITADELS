@@ -37,8 +37,17 @@ exports.connection = function(socket){
   });
 
   socket.on('commit-newroom',function(newroom){
-    room.add(newroom);
-    socket.emit('room-list', room.getList());
+    if (room.add(newroom)){
+      socket.emit('commit-newroom', {
+        'result': true,
+        'message': 'Room created.',
+        'roomid': room.getIdByName(newroom.name)
+      });
+    }
+    else{
+      socket.emit('commit-newroom', { 'result': false, 'message': 'Failed creating room.' });
+      socket.emit('room-list', room.getList()); // refresh room list
+    }
   });
 
   socket.on('disconnect', function(){

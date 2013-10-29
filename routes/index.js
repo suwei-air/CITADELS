@@ -15,5 +15,6 @@ exports.roomlist = function(req, res){
 };
 
 exports.room = function(req, res){
+  console.log('Enter room[id=' + req.query.id + '].');
   res.render('room');
 };
