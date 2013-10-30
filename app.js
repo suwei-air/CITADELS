@@ -4,10 +4,11 @@ var path = require('path');
 var sio = require('socket.io');
 var routes = require('./routes');
 
-var user = require('./sio/user');
-var room = require('./sio/room');
-var sioConnection = require('./sio/connection').connection;
+var user = require('./utils/user');
+var room = require('./utils/room');
 var sioAuthorization = require('./sio/authorization').authorization;
+var sioRoomList = require('./sio/roomlist').roomList;
+var sioRoom = require('./sio/room').room;
 
 global.sessionStore = new express.session.MemoryStore({reapInterval: 60000 * 10});
 global.SECRET = 'CITADELS';
@@ -52,4 +53,6 @@ server.listen(app.get('port'), function(){
 
 var io = sio.listen(server);
 io.set('authorization', sioAuthorization);
-io.on('connection', sioConnection);
+io.of('/room-list').on('connection', sioRoomList);
+io.of('/room').on('connection', sioRoom);
+console.log('socket.io started.');

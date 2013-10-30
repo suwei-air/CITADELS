@@ -1,6 +1,5 @@
 $(document).ready(function(){
-  var domain = window.location.host;
-  var connection = io.connect("http://" + domain);
+  var connection = io.connect(window.location.href);
 
   $("input#username").blur(function(){
     //$(this).val("testuser");
@@ -23,7 +22,8 @@ $(document).ready(function(){
     newroom.name = $("input#opt-room-name").val();
     newroom.timeout = $("select#opt-timeout").val();
     newroom.maxbuilding = $("select#opt-maxbuilding").val();
-    newroom.players = 1;
+    newroom.players = [];
+    newroom.playersNum = 0;
     newroom.seats = 8;
     connection.emit('commit-newroom',newroom);
     return false;
@@ -32,7 +32,7 @@ $(document).ready(function(){
   connection.on('commit-newroom', function(data){
     console.log(data);
     if (data.result === true){
-      window.location.href = 'http://' + domain + '/room?id=' + data.roomid;
+      window.location.href = 'http://' + window.location.host + '/room?id=' + data.roomid;
     }
     else{
       alert(data.message);
@@ -55,7 +55,7 @@ $(document).ready(function(){
   });
 
   connection.on('room-list', function(rooms){
-    $("#room-table tbody tr").unbind("click"); // Clear click event of each room
+    $("#room-table tbody tr").unbind("click").unbind('dblclick'); // Clear click event of each room
     var room_id = 0;
     for (var i = 0; i<rooms.length; ++i){
       var room = rooms[i];
@@ -65,14 +65,14 @@ $(document).ready(function(){
       $(element).children(".td-room-name").html(room.name);
       $(element).children(".td-timeout").html(room.timeout + " s");
       $(element).children(".td-maxbuilding").html(room.maxbuilding);
-      $(element).children(".td-players").html(room.players + "/" + room.seats);
+      $(element).children(".td-players").html(room.playersNum + "/" + room.seats);
       // add click event for room which has content
       $(element).click(function(){
         $("#room-table tr").css("background-color","");
         $(this).css("background-color","rgb(50,50,50)");
       })
       .dblclick(function(){
-        window.location.href = 'http://' + domain + '/room?id=' + $(this).attr('data-roomid');
+        window.location.href = 'http://' + window.location.host + '/room?id=' + $(this).attr('data-roomid');
       });
       ++room_id;
       if (room_id > 4){

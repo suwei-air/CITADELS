@@ -1,18 +1,20 @@
-var user = require('./user');
-var room = require('./room');
+var user = require('../utils/user');
+var room = require('../utils/room');
 
 // update session data
 function setSession(sid, session){
   global.sessionStore.set(sid, session, function(){});
 }
 
-exports.connection = function(socket){
+exports.roomList = function(socket){
   var cid = socket.id;
   var session = socket.handshake.session;
   console.log('welcome ' + session.name + '[cid=' + cid + ', sid=' + socket.handshake.cookies['sid'] + ']');
 
   // boradcast room-list
   socket.emit('room-list', room.getList());
+
+  // TODO : boradcast room-list once changed
 
   // combine the socket to the username
   user.putUsername(session.name, socket);

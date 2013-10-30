@@ -1,35 +1,69 @@
-var rooms = [];
-var roomSeq = 2; // incresing sequence number of room id
+var user = require('../utils/user');
+var room = require('../utils/room');
 
-exports.init = function(){
-  rooms = [
-    {'id': 0, "name": "first room", "timeout": 30, "maxbuilding":8, "players": 5, "seats": 8},
-    {'id': 1, "name": "second room", "timeout": 15, "maxbuilding":9, "players": 3, "seats": 8}
-  ];
-};
+// update session data
+//function setSession(sid, session){
+//  global.sessionStore.set(sid, session, function(){});
+//}
 
-exports.getList = function(){
-  return rooms;
-};
+exports.room = function(socket){
+  var cid = socket.id;
+  var session = socket.handshake.session;
+  console.log('welcome ' + session.name + '[cid=' + cid + ', sid=' + socket.handshake.cookies['sid']
+    + '] to room[' + session.roomid + '].');
 
-exports.add = function(newroom){
-  newroom.id = roomSeq++;
-  rooms.push(newroom);
-  return true;
-};
+  // try to join
+  room.join(session.name, session.roomid);
 
-exports.getIdByName = function(name){
-  var i = 0;
-  for (i = 0; i<rooms.length; ++i){
-    if (name == rooms[i].name){
-      break;
+  // boradcast room-info
+  socket.emit('room-info', room.getRoomById(session.roomid));
+
+  // TODO : boradcast room-info once changed
+
+  socket.on('change-seat', function(data){
+    console.log('try to change seat.');
+    room.changeSeat(session.name, data.pos, session.roomid);
+    socket.emit('room-info', room.getRoomById(session.roomid));
+  });
+/*
+  // combine the socket to the username
+  user.putUsername(session.name, socket);
+
+  socket.on('commit-username', function(username){
+    console.log("cid=" + cid + ", request username=" + username);
+    if (!user.isUsernameValid(username, socket)){
+      socket.emit('commit-username', {
+        "result": false,
+        "message": "Username '" + username + "' already in use!"
+      });
     }
-  }
-  if (i != rooms.length){
-    return rooms[i].id;
-  }
-  else{
-    return -1;
-  }
+    else{
+      user.putUsername(username, socket);
+      socket.emit('commit-username', {
+        "result": true,
+        "message": "Username '" + username + "' confirmed."
+      });
+      session.name = username;
+      setSession(socket.handshake.cookies['sid'], session); // remember to update session
+    }
+  });
 
+  socket.on('commit-newroom',function(newroom){
+    if (room.add(newroom)){
+      socket.emit('commit-newroom', {
+        'result': true,
+        'message': 'Room created.',
+        'roomid': room.getIdByName(newroom.name)
+      });
+    }
+    else{
+      socket.emit('commit-newroom', { 'result': false, 'message': 'Failed creating room.' });
+      socket.emit('room-list', room.getList()); // refresh room list
+    }
+  });
+*/
+  socket.on('disconnect', function(){
+    user.remove(socket);
+    console.log('goodbye ' + session.name + '[cid=' + cid + ', sid=' + socket.handshake.cookies['sid'] + ']');
+  });
 };

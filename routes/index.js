@@ -1,4 +1,4 @@
-var isUsernameValid = require('../sio/user').isUsernameValid;
+var isUsernameValid = require('../utils/user').isUsernameValid;
 
 exports.index = function(req, res){
   res.render('index');//, { title: '富饶之城' });
@@ -19,5 +19,6 @@ exports.room = function(req, res){
     res.redirect('room-list');
   }
   console.log('Enter room[id=' + req.query.id + '].');
+  req.session.roomid=req.query.id;
   res.render('room');
 };
