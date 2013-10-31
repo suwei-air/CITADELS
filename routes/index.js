@@ -22,3 +22,12 @@ exports.room = function(req, res){
   req.session.roomid=req.query.id;
   res.render('room');
 };
+
+exports.game = function(req, res){
+  if (typeof(req.session.name)=='undefined'){
+    res.redirect('room-list');
+  }
+  console.log('Somebody named \'' + req.session.name + '\' join Game #' + req.query.id + '.');
+  req.session.gameid = req.query.id;
+  res.render('game');  
+};

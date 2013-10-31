@@ -14,7 +14,15 @@ $(document).ready(function(){
     connection.emit('leave-room', {});
   });
   $('#btn-start').click(function(){
-    alert('starting');
+    connection.emit('start', {});
+    // count players
+    var counter = 0;
+    $('#show-players ul li').each(function(){
+      if ($(this).children('span.player-name').html() != '&nbsp;'){
+        counter++;
+      }
+    });
+    alert('starting with ' + counter + ' players.');
   });
 
   connection.on('room-info', function(roomInfo){
@@ -33,6 +41,11 @@ $(document).ready(function(){
   connection.on('leave-room', function(data){
     if (true === data.result){
       window.location.href = 'http://' + window.location.host + '/room-list';
+    }
+  });
+  connection.on('start', function(data){
+    if (true === data.result){
+      window.location.href = 'http://' + window.location.host + '/game?id=' + data.gameid;
     }
   });
 });

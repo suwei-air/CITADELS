@@ -6,9 +6,11 @@ var routes = require('./routes');
 
 var user = require('./utils/user');
 var room = require('./utils/room');
+var game = require('./utils/game');
 var sioAuthorization = require('./sio/authorization').authorization;
 var sioRoomList = require('./sio/roomlist').roomList;
 var sioRoom = require('./sio/room').room;
+var sioGame = require('./sio/game').game;
 
 global.sessionStore = new express.session.MemoryStore({reapInterval: 60000 * 10});
 global.SECRET = 'CITADELS';
@@ -41,10 +43,12 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/room-list', routes.roomlist);
 app.get('/room', routes.room);
+app.get('/game', routes.game);
 
-// init user and room
+// init utils
 user.init();
 room.init();
+game.init();
 
 var server = http.createServer(app);
 server.listen(app.get('port'), function(){
@@ -55,4 +59,5 @@ var io = sio.listen(server);
 io.set('authorization', sioAuthorization);
 io.of('/room-list').on('connection', sioRoomList);
 io.of('/room').on('connection', sioRoom);
+io.of('/game').on('connection', sioGame);
 console.log('socket.io started.');
