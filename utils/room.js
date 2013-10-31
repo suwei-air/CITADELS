@@ -132,3 +132,23 @@ exports.changeSeat = function(username, seat, roomid){
   rooms[i].playersNum++;
   return true;
 };
+
+exports.leave = function(username, roomid){
+  // find room
+  var i = 0;
+  for (i = 0; i<rooms.length; ++i){
+    if (roomid == rooms[i].id){
+      break;
+    }
+  }
+  if (i == rooms.length){
+    return false;
+  }
+  // leave orign seat
+  for (var j = 0; j<8; ++j){
+    if (username == rooms[i].players[j]){ // orign seat
+      rooms[i].players[j] = null;
+      rooms[i].playersNum--;
+    }
+  }
+};

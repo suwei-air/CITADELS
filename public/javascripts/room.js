@@ -10,6 +10,13 @@ $(document).ready(function(){
     }
   });
 
+  $('#btn-back').click(function(){
+    connection.emit('leave-room', {});
+  });
+  $('#btn-start').click(function(){
+    alert('starting');
+  });
+
   connection.on('room-info', function(roomInfo){
     document.title = roomInfo.name + ' - 富饶之城';
     for (var i = 0; i<roomInfo.players.length; ++i){
@@ -21,6 +28,11 @@ $(document).ready(function(){
       else{
         $(element).children('span').html('&nbsp;');
       }
+    }
+  });
+  connection.on('leave-room', function(data){
+    if (true === data.result){
+      window.location.href = 'http://' + window.location.host + '/room-list';
     }
   });
 });
