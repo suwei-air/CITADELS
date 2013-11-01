@@ -16,7 +16,7 @@ exports.roomList = function(socket){
 
   // TODO : boradcast room-list once changed
   // -- someone create a room [done]
-  // -- last one leave room(room destroy)
+  // -- last one leave room(room destroy) [done]
   // -- some one join a room
   // -- some one back to lobby
 

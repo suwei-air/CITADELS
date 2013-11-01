@@ -151,4 +151,11 @@ exports.leave = function(username, roomid){
       rooms[i].playersNum--;
     }
   }
+  // destroy room which contains nobody
+  for (i in rooms){
+    if (rooms[i].playersNum == 0){
+      console.log('Destroy Room #' + i + '[roomid=' + rooms[i].id + '].');
+      rooms.splice(i, 1);
+    }
+  }
 };

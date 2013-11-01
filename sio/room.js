@@ -24,7 +24,12 @@ exports.room = function(socket){
 
   socket.on('leave-room', function(data){
     room.leave(session.name, session.roomid);
-    socket.emit('leave-room', {'result': true, 'message': 'OK, you\'re leaving now. See ya.'})
+    socket.emit('leave-room', {'result': true, 'message': 'OK, you\'re leaving now. See ya.'});
+    // broadcast
+    user.foreachUserConn(user.getUsernameList(), function(s){
+      console.log('sending room-list to ' + s);
+      s.emit('room-list', room.getList());
+    });
   });
 
   socket.on('start', function(data){
