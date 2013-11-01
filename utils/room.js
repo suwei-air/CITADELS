@@ -15,6 +15,7 @@ exports.getList = function(){
 exports.add = function(newroom){
   newroom.id = roomSeq++;
   rooms.push(newroom);
+  console.log('after add rooms=' + rooms);
   return true;
 };
 
@@ -152,10 +153,13 @@ exports.leave = function(username, roomid){
     }
   }
   // destroy room which contains nobody
-  for (i in rooms){
+  for (i=0; i<rooms.length; ++i){ // WARN : can't replace with 'for (i in rooms)'
+    console.log('in destroy loop, i=' + i + ', rooms=' + rooms);
     if (rooms[i].playersNum == 0){
       console.log('Destroy Room #' + i + '[roomid=' + rooms[i].id + '].');
       rooms.splice(i, 1);
+      --i;
+      console.log('after splice, i=' + i + ', rooms=' + rooms);
     }
   }
 };

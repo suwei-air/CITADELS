@@ -21,8 +21,8 @@ exports.getUsernameList = function(){
 
 exports.foreachUserConn = function(usernames, func){
   console.log('usernames='+usernames);
-  for (var i=0; i<usernames.length; ++i){
-    for (var j=0; j<users.length; ++j){
+  for (var i in usernames){
+    for (var j in users){
       if (usernames[i] == users[j].username){
         func(users[j].connection);
         break;
@@ -34,6 +34,10 @@ exports.foreachUserConn = function(usernames, func){
 exports.isUsernameValid = function(username, socket){
   var i = 0;
   for (i = 0; i<users.length; ++i){
+  // WARN : YOU CAN'T REPLACE THIS WITH 'for (i in users)' !!!
+  //        BECAUSE ENVN IF NO MATCH USERNAME FOUND, i WOULD NEVER REATCH users.length !!!
+  //        SO, you can only replace 'for (i=0;i<users.length;++i)' with 'for (i in users)'
+  //        if you don't rely on final value of 'i' to determine any match found or not.
     if (username == users[i].username){
       break;
     }
@@ -58,7 +62,8 @@ exports.putUsername = function(username, socket){
 
 exports.remove = function(socket){
   var i = 0;
-  for (i = 0; i<users.length; ++i){
+  // assume there must be a match result
+  for (i in users){
     if (socket === users[i].connection){
       break;
     }

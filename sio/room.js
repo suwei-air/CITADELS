@@ -11,6 +11,12 @@ exports.room = function(socket){
   // try to join
   room.join(session.name, session.roomid);
 
+  // broadcast room-list info to others in lobby
+  user.foreachUserConn(user.getUsernameList(), function(s){
+    console.log('sending room-list to ' + s);
+    s.emit('room-list', room.getList());
+  });
+
   // boradcast room-info
   socket.emit('room-info', room.getRoomById(session.roomid));
 
@@ -25,7 +31,7 @@ exports.room = function(socket){
   socket.on('leave-room', function(data){
     room.leave(session.name, session.roomid);
     socket.emit('leave-room', {'result': true, 'message': 'OK, you\'re leaving now. See ya.'});
-    // broadcast
+    // broadcast room-list info to others in lobby
     user.foreachUserConn(user.getUsernameList(), function(s){
       console.log('sending room-list to ' + s);
       s.emit('room-list', room.getList());

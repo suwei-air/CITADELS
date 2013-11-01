@@ -14,16 +14,17 @@ exports.roomList = function(socket){
   // boradcast room-list
   socket.emit('room-list', room.getList());
 
-  // TODO : boradcast room-list once changed
+  // TODO : boradcast room-list once changed [done]
   // -- someone create a room [done]
   // -- last one leave room(room destroy) [done]
-  // -- some one join a room
-  // -- some one back to lobby
+  // -- some one join a room [done]
+  // -- some one back to lobby [done]
 
   // TODO : boradcast just to everyone in lobby, not to anyone in room/game
 
   // combine the socket to the username
   user.putUsername(session.name, socket);
+  console.log('combine the socket to the username');
 
   socket.on('commit-username', function(username){
     console.log("cid=" + cid + ", request username=" + username);
@@ -54,9 +55,8 @@ exports.roomList = function(socket){
     }
     else{
       socket.emit('commit-newroom', { 'result': false, 'message': 'Failed creating room.' });
-      //socket.emit('room-list', room.getList()); // refresh room list
     }
-    // broadcast
+    // broadcast to refresh room list
     user.foreachUserConn(user.getUsernameList(), function(s){
       console.log('sending room-list to ' + s);
       s.emit('room-list', room.getList());
