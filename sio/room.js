@@ -8,8 +8,18 @@ exports.room = function(socket){
   console.log('welcome ' + session.name + '[cid=' + cid + ', sid=' + socket.handshake.cookies['sid']
     + '] to room[' + session.roomid + '].');
 
+  // update user-socket list
+  user.putUsername(session.name, socket);
+
   // try to join
   room.join(session.name, session.roomid);
+
+  // boradcast room-info
+  user.foreachUserConn(room.getUsernameListByRoomid(session.roomid), function(s){
+    console.log('sending room-info to ' + s);
+    s.emit('room-info', room.getRoomById(session.roomid));
+  });
+  //socket.emit('room-info', room.getRoomById(session.roomid));
 
   // broadcast room-list info to others in lobby
   user.foreachUserConn(user.getUsernameList(), function(s){
@@ -17,10 +27,10 @@ exports.room = function(socket){
     s.emit('room-list', room.getList());
   });
 
-  // boradcast room-info
-  socket.emit('room-info', room.getRoomById(session.roomid));
-
   // TODO : boradcast room-info once changed
+  // -- someone joined this room [done]
+  // -- someone in this room changed seat
+  // -- someone left this room
 
   socket.on('change-seat', function(data){
     console.log('try to change seat.');

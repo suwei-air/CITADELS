@@ -50,6 +50,23 @@ function getRoomById(roomid){
 }
 exports.getRoomById = getRoomById;
 
+exports.getUsernameListByRoomid = function(roomid){
+  var room = getRoomById(roomid);
+  if (room === false){
+    return [];
+  }
+  var usernames=[];
+  for (i in room.players){
+    console.log('user=' + room.players[i]);
+    if (room.players[i]){
+      console.log('pushing ' + room.players[i]);
+      usernames.push(room.players[i]);
+    }
+  }
+  console.log('getUsernameListByRoomid returns ' + usernames);
+  return usernames;
+};
+
 function hasSeat(username, roomid){
   var room = getRoomById(roomid);
   if (!room){
