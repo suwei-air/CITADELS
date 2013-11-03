@@ -59,13 +59,16 @@ exports.room = function(socket){
   });
 
   socket.on('start', function(data){
-    // TODO : boradcast to players in the same room
     var gameid = game.create(room.getRoomById(session.roomid));
     if (gameid === false){
       socket.emit('start', {'result': false, 'message': 'Game can\'t be started.'});
     }
     else{
-      socket.emit('start', {'result': true, 'message': 'Game #' + gameid + ' is starting...', 'gameid': gameid});
+      // boradcast to players in the same room
+      user.foreachUserConn(room.getUsernameListByRoomid(session.roomid), function(s){
+        console.log('sending \'starting game\' to ' + s);
+        s.emit('start', {'result': true, 'message': 'Game #' + gameid + ' is starting...', 'gameid': gameid});
+      });
     }
   });
 
