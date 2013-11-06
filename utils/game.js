@@ -18,6 +18,7 @@ exports.init = function(){
           'coins': 4
         }
       ],
+      'kingPosition': 0,
       'onlookers': [],
       'roleInAction': 'Thief',
       'period': 'MoneyOrCard',
@@ -46,11 +47,14 @@ exports.create = function(room){
     player.name = room.players[i];
     player.role = null;
     player.isKilled = false;
+    player.isRobbed = false;
+    player.isTaxed = true;
     player.cards = new Array();
     player.buildings = new Array();
-    player.coins = 0;
+    player.coins = 2;
     game.players.push(player);
   }
+  game.kingPosition = 0;
   game.onlookers = new Array();
   game.roleInAction = null;
   game.period = null;
@@ -59,6 +63,7 @@ exports.create = function(room){
   game.rolesToChoose = new Array();
   game.cardStack = new Array();
   game.cardDiscarded = new Array();
+  game.isStarted = false;
   games.push(game);
   return game.id;
 };
@@ -124,17 +129,19 @@ exports.join = function(username, gameid){
 };
 
 function start(gameid){
-
+  var game = getGameById(roomid);
+  game.kingPosition = round(random()*game.players.length);
+  game.isStarted = true;
 }
 exports.start = start;
 
 function isStarted(gameid){
-
+  return getGameById(gameid).isStarted;
 }
 exports.isStarted = isStarted;
 
 function isAllOnSpot(gameid){
-
+  
 }
 exports.isAllOnSpot = isAllOnSpot;
 
@@ -144,6 +151,10 @@ function getGameStatusById(gameid){
 exports.getGameStatusById = getGameStatusById;
 
 function takeAction(username, gameid, action){
-
+  var ret = new Object();
+  ret.result = true;
+  ret.message = '';
+  ret.lastStep = new Object();
+  ret.nextStep = new Object();
 }
 exports.takeAction = takeAction;
