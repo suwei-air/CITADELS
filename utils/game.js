@@ -126,7 +126,7 @@ exports.join = function(username, gameid){
 function start(gameid){
 
 }
-exprots.start = start;
+exports.start = start;
 
 function isStarted(gameid){
 
