@@ -8,10 +8,8 @@ exports.getList = function(){
 };
 
 exports.getUsernameList = function(){
-  console.log('in getUsernameList, users=' + users);
   var usernames=[];
   for (i in users){
-    console.log('user=' + users[i]);
     console.log('pushing ' + users[i].username);
     usernames.push(users[i].username);
   }
@@ -43,9 +41,11 @@ exports.isUsernameValid = function(username, socket){
     }
   }
   if (i != users.length && users[i].connection != socket){
+    console.log(username + ' is invalid!');
     return false;
   }
   else{
+    console.log(username + ' is valid.');
     return true;
   }
 };

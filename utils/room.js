@@ -180,3 +180,11 @@ exports.leave = function(username, roomid){
     }
   }
 };
+
+exports.isStarted = function(roomid){
+  var room = getRoomById(roomid);
+  if (typeof(room.gameid)=='undefined'){
+    return false;
+  }
+  return room.gameid;
+}

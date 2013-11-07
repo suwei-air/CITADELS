@@ -1,3 +1,5 @@
+var CARDS = require('./soliddata').CARDS;
+
 var games = [];
 var gameSeq = 1; // incresing sequence number of room id
 
@@ -12,6 +14,7 @@ exports.init = function(){
         {
           'name': 'a',
           'role': 'king',
+          'isIn': false,
           'isKilled': false,
           'cards': [],
           'buildings': [],
@@ -46,6 +49,8 @@ exports.create = function(room){
     player = new Object();
     player.name = room.players[i];
     player.role = null;
+    player.publicRole = null;
+    player.isIn = false;
     player.isKilled = false;
     player.isRobbed = false;
     player.isTaxed = true;
@@ -65,6 +70,7 @@ exports.create = function(room){
   game.cardDiscarded = new Array();
   game.isStarted = false;
   games.push(game);
+  room.gameid = game.id;
   return game.id;
 };
 
@@ -119,19 +125,36 @@ exports.join = function(username, gameid){
     for (i in game.players){
       if (game.players[i].name == username){
         console.log(username + ' is a player in Game #' + gameid);
+        game.players[i].isIn = true;
         return true;
       }
     }
     console.log(username + ' is a onlooker in Game #' + gameid);
+    game.onlookers.push(username);
     return true;
   }
   return false;
 };
 
 function start(gameid){
-  var game = getGameById(roomid);
+  var game = getGameById(gameid);
   game.kingPosition = round(random()*game.players.length);
   game.isStarted = true;
+  // add and shuffle cards
+  var i, j;
+  for (i in CARDS){
+    for (j = 0; j<CARDS[i].number; ++j){
+      game.cardStack.push(CARDS[i]);
+    }
+  }
+  game.cardStack = shuffle(game.cardStack);
+  // give everyone 4 cards
+  for (i in game.players){
+    for (j = 0; j<4; ++j){
+      game.players[i].cards.push(game.cardStack.shift());
+    }
+  }
+  // TODO : start the first step
 }
 exports.start = start;
 
@@ -141,12 +164,42 @@ function isStarted(gameid){
 exports.isStarted = isStarted;
 
 function isAllOnSpot(gameid){
-  
+  var game = getGameById(gameid);
+  for (i in game.players){
+    if (game.players[i].isIn === false){
+      console.log(game.players[i].name + ' is absent.');
+      return false;
+    }
+  }
+  return true;
 }
 exports.isAllOnSpot = isAllOnSpot;
 
-function getGameStatusById(gameid){
-
+function getGameStatusById(gameid, username){
+  var game = getGameById(gameid);
+  var status = new Object();
+  status.players = new Array();
+  var player;
+  for (i in game.players){
+    player = new Object();
+    player.name = game.players[i].name;
+    player.coins = game.players[i].coins;
+    player.buildings = game.players[i].buildings;
+    player.cardNum = game.players[i].cards.length;
+    // TODO : show everyone's cards only for debug
+    //if (game.players[i].name == username){
+      player.cards = game.players[i].cards;
+      player.role = game.players[i].role;
+    //}
+    //else{
+    //  player.cards = null;
+    //  player.role = game.players[i].publicRole;
+    //}
+    status.players.push(player);
+  }
+  status.curStep = new Object();
+  // TODO : complete all the conditions
+  return status;
 }
 exports.getGameStatusById = getGameStatusById;
 
@@ -154,7 +207,5 @@ function takeAction(username, gameid, action){
   var ret = new Object();
   ret.result = true;
   ret.message = '';
-  ret.lastStep = new Object();
-  ret.nextStep = new Object();
 }
 exports.takeAction = takeAction;

@@ -18,13 +18,13 @@ exports.game = function(socket){
   // boradcast game-info
   User.foreachUserConn(Game.getUsernameListByGameid(session.gameid), function(s){
     s.emit('message', { 'sender': 'System', 'message': session.name + ' joined/watching this game.' });
-    s.emit('game-info', Game.getGameStatusById(session.gameid));
+    s.emit('game-info', Game.getGameStatusById(session.gameid, session.name));
   });
 
   if ((!Game.isStarted(session.gameid)) && Game.isAllOnSpot(session.gameid)){
     Game.start(session.gameid);
     User.foreachUserConn(Game.getUsernameListByGameid(session.game), function(s){
-      s.emit('game-info', Game.getGameStatusById(session.gameid));
+      s.emit('game-info', Game.getGameStatusById(session.gameid, session.name));
     });
   }
 
@@ -37,7 +37,7 @@ exports.game = function(socket){
     else{
       User.foreachUserConn(Game.getUsernameListByGameid(session.gameid), function(s){
         s.emit('take-action', actionResult);
-        s.emit('game-info', Game.getGameStatusById(session.gameid));
+        s.emit('game-info', Game.getGameStatusById(session.gameid, session.name));
       });
     }
   });
