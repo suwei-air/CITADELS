@@ -1,4 +1,5 @@
 var CARDS = require('./soliddata').CARDS;
+var ROLES = require('./soliddata').ROLES;
 
 var games = [];
 var gameSeq = 1; // incresing sequence number of room id
@@ -53,7 +54,7 @@ exports.create = function(room){
     player.isIn = false;
     player.isKilled = false;
     player.isRobbed = false;
-    player.isTaxed = true;
+    player.isTaxed = false;
     player.cards = new Array();
     player.buildings = new Array();
     player.coins = 2;
@@ -62,7 +63,8 @@ exports.create = function(room){
   game.kingPosition = 0;
   game.onlookers = new Array();
   game.roleInAction = null;
-  game.period = null;
+  game.playerPosInAction = -1;
+  game.period = null; // ChooseRole, ...
   game.rolesHidden = new Array();
   game.rolesShow = new Array();
   game.rolesToChoose = new Array();
@@ -136,6 +138,54 @@ exports.join = function(username, gameid){
   return false;
 };
 
+function beginChooseRoles(game){
+  game.period = 'ChooseRole';
+  game.playerPosInAction = game.kingPosition;
+  game.rolesToChoose = new Array();
+  game.rolesShow = new Array();
+  game.rolesHidden = new Array();
+  switch(game.players.length){
+    case 3:
+      break;
+    case 4:
+      // add all the role cards to rolesToChoose
+      for (var i=0; i<8; ++i){
+        game.rolesToChoose.push(ROLES[i]);
+      }
+      // shuffle the role cards
+      {
+        game.rolesToChoose = shuffle(game.rolesToChoose);
+      } while(game.rolesToChoose[0].name!='King');
+      // 1 up and 1 down
+      game.rolesShow.push(game.rolesToChoose.shift());
+      game.rolesHidden.push(game.rolesToChoose.shift());
+      break;
+    case 5:
+      break;
+    case 6:
+      break;
+    case 7:
+      break;
+  }
+}
+function endChooseRoles(game){
+  switch(game.players.length){
+    case 3:
+      break;
+    case 4:
+      // 1 up and 1 down
+      game.rolesShow.push(game.rolesToChoose.shift());
+      game.rolesHidden.push(game.rolesToChoose.shift());
+      break;
+    case 5:
+      break;
+    case 6:
+      break;
+    case 7:
+      break;
+  }
+}
+
 function start(gameid){
   var game = getGameById(gameid);
   game.kingPosition = round(random()*game.players.length);
@@ -154,7 +204,8 @@ function start(gameid){
       game.players[i].cards.push(game.cardStack.shift());
     }
   }
-  // TODO : start the first step
+  // start the first step
+  beginChooseRoles(game);
 }
 exports.start = start;
 
@@ -198,14 +249,51 @@ function getGameStatusById(gameid, username){
     status.players.push(player);
   }
   status.curStep = new Object();
-  // TODO : complete all the conditions
+  status.curStep.username = game.players[game.playerPosInAction].name;
+  status.curStep.period = game.period;
+  switch(game.period){
+    case 'ChooseRole':
+      status.curStep.rolesToChoose = game.rolesToChoose;
+      status.curStep.rolesShow = game.rolesShow;
+      status.curStep.rolesHiddenNum = game.rolesHidden.length;
+      break;
+  }
   return status;
 }
 exports.getGameStatusById = getGameStatusById;
 
 function takeAction(username, gameid, action){
-  var ret = new Object();
-  ret.result = true;
-  ret.message = '';
+  /*
+  action={
+  period: ChooseRole
+  roleChosen: Assassin
+  }
+  */
+  var game = getGameById(gameid);
+  if (game.players[game.playerPosInAction].name!=username || game.period!=action.period){
+    return false;
+  }
+  var i, j;
+  switch(action.period){
+    case 'ChooseRole':
+      for (i=0; i<game.rolesToChoose.length; ++i){
+        if (game.rolesToChoose[i].name == action.roleChosen){
+          break;
+        }
+      }
+      if (i==game.rolesToChoose.length){ // not valid
+        return false;
+      }
+      // choose
+      game.players[game.playerPosInAction].role = game.rolesToChoose[i];
+      game.rolesToChoose.splice(i, 1);
+      // next one
+      game.playerPosInAction = (playerPosInAction + 1) % game.players.length;
+      if (game.playerPosInAction == game.kingPosition){ // finish
+        endChooseRoles(game);
+        // TODO : beginPlayersRound(game);
+      }
+      break;
+  }
 }
 exports.takeAction = takeAction;

@@ -10,7 +10,7 @@ Merchant
 Architect
 Warlord
 */
-exports.Roles = [
+exports.ROLES = [
   { 'name': 'Assassin',	'order': 1 },
   { 'name': 'Thief',	'order': 2 },
   { 'name': 'Magician',	'order': 3 },
