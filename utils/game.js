@@ -64,7 +64,8 @@ exports.create = function(room){
   game.onlookers = new Array();
   game.roleInAction = null;
   game.playerPosInAction = -1;
-  game.period = null; // ChooseRole, ...
+  game.period = null; // ChooseRole, PlayersRound
+  game.round = null; // TODO : ...
   game.rolesHidden = new Array();
   game.rolesShow = new Array();
   game.rolesToChoose = new Array();
@@ -186,6 +187,38 @@ function endChooseRoles(game){
   }
 }
 
+function getPlayerPosByRole(game, role){
+  var i;
+  for (i=0; i<game.players.length; ++i){
+    if (game.players[i].role.name == 'role'){
+      break;
+    }
+  }
+  if (i == game.players.length){
+    return false;
+  }
+  return i;
+}
+
+function beginPlayersRound(game){
+  game.period = 'PlayersRound';
+  var i, pos;
+  for (i in ROLES){
+    pos = getPlayerPosByRole(game, ROLES[i].name);
+    if (pos !== false){
+      game.playerPosInAction = pos;
+      break;
+    }
+  }
+  game.round = 'Begin'; // TODO
+}
+function endPlayersRound(game){
+  var pos = getPlayerPosByRole(game, 'King');
+  if (pos !== false){
+    game.kingPosition = pos;
+  }
+}
+
 function start(gameid){
   var game = getGameById(gameid);
   game.kingPosition = round(random()*game.players.length);
@@ -256,6 +289,9 @@ function getGameStatusById(gameid, username){
       status.curStep.rolesToChoose = game.rolesToChoose;
       status.curStep.rolesShow = game.rolesShow;
       status.curStep.rolesHiddenNum = game.rolesHidden.length;
+      break;
+    case 'PlayersRound':
+      // TODO
       break;
   }
   return status;
