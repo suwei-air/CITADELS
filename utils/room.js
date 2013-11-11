@@ -2,10 +2,7 @@ var rooms = [];
 var roomSeq = 2; // incresing sequence number of room id
 
 exports.init = function(){
-  rooms = [
-    {'id': 0, "name": "first room", "timeout": 30, "maxbuilding":8, "players": ['a', , 'b'], 'playersNum': 2, "seats": 8},
-    {'id': 1, "name": "second room", "timeout": 15, "maxbuilding":9, "players": [], 'playersNum': 0, "seats": 8}
-  ];
+  rooms = [];
 };
 
 exports.getList = function(){

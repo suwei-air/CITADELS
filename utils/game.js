@@ -6,6 +6,7 @@ var gameSeq = 1; // incresing sequence number of room id
 
 exports.init = function(){
   games = [
+/*
     {
       'id': 0,
       'name': 'first room',
@@ -32,6 +33,7 @@ exports.init = function(){
       'cardStack': [],
       'cardDiscarded': []
     }
+*/
   ];
 };
 
@@ -41,6 +43,7 @@ exports.create = function(room){
   game.name = room.name;
   game.timeout = room.timeout;
   game.maxbuilding = room.maxbuilding;
+  game.isStarted = false;
   game.players = new Array();
   var player, i;
   for (i in room.players){
@@ -49,12 +52,12 @@ exports.create = function(room){
     }
     player = new Object();
     player.name = room.players[i];
+    player.isIn = false;
     player.role = null;
     player.publicRole = null;
-    player.isIn = false;
     player.isKilled = false;
-    player.isRobbed = false;
-    player.isTaxed = false;
+    player.isStolen = false;
+    player.postActionOptions = null;
     player.cards = new Array();
     player.buildings = new Array();
     player.coins = 2;
@@ -65,13 +68,12 @@ exports.create = function(room){
   game.roleInAction = null;
   game.playerPosInAction = -1;
   game.period = null; // ChooseRole, PlayersRound
-  game.round = null; // TODO : ...
+  game.round = null; // Pre-action, Action, Post-action
   game.rolesHidden = new Array();
   game.rolesShow = new Array();
   game.rolesToChoose = new Array();
   game.cardStack = new Array();
   game.cardDiscarded = new Array();
-  game.isStarted = false;
   games.push(game);
   room.gameid = game.id;
   return game.id;
@@ -87,7 +89,12 @@ function shuffle(arr){
   }
   return ret;
 }
-exports.shuffle = shuffle;
+//exports.shuffle = shuffle;
+function in_array(arr, e)
+{
+  for(i=0; i<arr.length && arr[i]!=e; i++);
+  return !(i==arr.length);
+}
 
 function getGameById(gameid){
   var i = 0;
@@ -151,12 +158,12 @@ function beginChooseRoles(game){
     case 4:
       // add all the role cards to rolesToChoose
       for (var i=0; i<8; ++i){
-        game.rolesToChoose.push(ROLES[i]);
+        game.rolesToChoose.push(ROLES[i].name);
       }
       // shuffle the role cards
       {
         game.rolesToChoose = shuffle(game.rolesToChoose);
-      } while(game.rolesToChoose[0].name!='King');
+      } while(game.rolesToChoose[0]!='King');
       // 1 up and 1 down
       game.rolesShow.push(game.rolesToChoose.shift());
       game.rolesHidden.push(game.rolesToChoose.shift());
@@ -190,7 +197,7 @@ function endChooseRoles(game){
 function getPlayerPosByRole(game, role){
   var i;
   for (i=0; i<game.players.length; ++i){
-    if (game.players[i].role.name == 'role'){
+    if (game.players[i].role == role){
       break;
     }
   }
@@ -207,10 +214,11 @@ function beginPlayersRound(game){
     pos = getPlayerPosByRole(game, ROLES[i].name);
     if (pos !== false){
       game.playerPosInAction = pos;
+      game.roleInAction = ROLES[i].name;
       break;
     }
   }
-  game.round = 'Begin'; // TODO
+  game.round = 'Pre-action';
 }
 function endPlayersRound(game){
   var pos = getPlayerPosByRole(game, 'King');
@@ -259,6 +267,27 @@ function isAllOnSpot(gameid){
 }
 exports.isAllOnSpot = isAllOnSpot;
 
+function nextPlayer(game){
+  // find current role
+  var curPos, nextPos;
+  for (curPos=0; curPos<ROLES.length; ++curPos){
+    if (ROLES[curPos].name==game.players[game.playerPosInAction].role){
+      break;
+    }
+  }
+  // find next role and return true, otherwise return false
+  for (++curPos; curPos<ROLES.length; ++curPos){
+    nextPos = getPlayerPosByRole(game, ROLES[curPos].name);
+    if (nextPos !== false && game.players[nextPos].isKilled===false){
+      game.playerPosInAction = i;
+      game.roleInAction = ROLES[curPos].name;
+      game.period = 'Pre-action';
+      return true;
+    }
+  }
+  return false;
+}
+
 function getGameStatusById(gameid, username){
   var game = getGameById(gameid);
   var status = new Object();
@@ -270,20 +299,20 @@ function getGameStatusById(gameid, username){
     player.coins = game.players[i].coins;
     player.buildings = game.players[i].buildings;
     player.cardNum = game.players[i].cards.length;
-    // TODO : show everyone's cards only for debug
-    //if (game.players[i].name == username){
+    if (game.players[i].name == username){
       player.cards = game.players[i].cards;
       player.role = game.players[i].role;
-    //}
-    //else{
-    //  player.cards = null;
-    //  player.role = game.players[i].publicRole;
-    //}
+    }
+    else{
+      player.cards = null;
+      player.role = game.players[i].publicRole;
+    }
     status.players.push(player);
   }
   status.curStep = new Object();
   status.curStep.username = game.players[game.playerPosInAction].name;
   status.curStep.period = game.period;
+  status.curStep.round = game.round;
   switch(game.period){
     case 'ChooseRole':
       status.curStep.rolesToChoose = game.rolesToChoose;
@@ -291,7 +320,84 @@ function getGameStatusById(gameid, username){
       status.curStep.rolesHiddenNum = game.rolesHidden.length;
       break;
     case 'PlayersRound':
-      // TODO
+      switch(game.round){
+        case 'Pre-action':
+          // add post-action options
+          game.players[game.playerPosInAction].postActionOptions = new Array();
+          var option = new Object();
+          option.option = 'Build'; // everyone can build once
+          game.players[game.playerPosInAction].postActionOptions.push(option);
+          switch(game.players[game.playerPosInAction].role){
+            case 'Assassin':
+              option = new Object();
+              option.option = 'Skill';
+              option.skill = 'Kill';
+              game.players[game.playerPosInAction].postActionOptions.push(option);
+              break;
+            case 'Thief':
+              option = new Object();
+              option.option = 'Skill';
+              option.skill = 'Steal';
+              game.players[game.playerPosInAction].postActionOptions.push(option);
+              break;
+            case 'Magician':
+              option = new Object();
+              option.option = 'Skill';
+              option.skill = 'Switch-card';
+              game.players[game.playerPosInAction].postActionOptions.push(option);
+              break;
+            case 'Architect':
+              option = new Object();
+              option.option = 'Build';
+              game.players[game.playerPosInAction].postActionOptions.push(option);
+              option = new Object();
+              option.option = 'Build';
+              game.players[game.playerPosInAction].postActionOptions.push(option);
+              break;
+            case 'Warlord':
+              option = new Object();
+              option.option = 'Skill';
+              option.skill = 'Destroy';
+              game.players[game.playerPosInAction].postActionOptions.push(option);
+            case 'King':
+            case 'Bishop':
+            case 'Merchant':
+              option = new Object();
+              option.option = 'Skill';
+              option.skill = 'Tax';
+              game.players[game.playerPosInAction].postActionOptions.push(option);
+              break;
+          }
+          if (in_array(game.players[game.playerPosInAction].buildings, '实验室')){
+            option = new Object();
+            option.option = 'Building-skill';
+            option.building = '实验室';
+            game.players[game.playerPosInAction].postActionOptions.push(option);
+          }
+          if (in_array(game.players[game.playerPosInAction].buildings, '铁匠铺')){
+            option = new Object();
+            option.option = 'Building-skill';
+            option.building = '铁匠铺';
+            game.players[game.playerPosInAction].postActionOptions.push(option);
+          }
+          // process stealing
+          if (game.players[game.playerPosInAction].isStolen){
+            var pos = getPlayerPosByRole(game, 'Thief');
+            if (pos !== false){
+              game.players[pos].coins += game.players[game.playerPosInAction].coins;
+              game.players[game.playerPosInAction].coins = 0;
+            }
+          }
+          game.round = 'Action';
+          return getGameStatusById(gameid, username);
+          break;
+        case 'Action':
+          break;
+        case 'Action-card':
+          break;
+        case 'Post-action':
+          break;
+      }
       break;
   }
   return status;
@@ -304,7 +410,27 @@ function takeAction(username, gameid, action){
   period: ChooseRole
   roleChosen: Assassin
   }
+  action={
+  period: PlayersRound
+  round: Action
+  choose: Money/Card
+  }
+  action={
+  period: PlayersRound
+  round: Action-card
+  choose: 神庙
+  }
+  action={
+  period: PlayersRound
+  round: Post-action
+  choose: Build/Skill/Building-skill
+  building: 神庙 [if choose=Build]
+  skill: Kill/Steal/Switch-card/Tax/Destroy[if choose=Skill] || 
+  target: role-name[if skill=Kill/Steal]/user-name[if skill=Switch-card]/{owner:username, building:神庙}[if skill=Destroy]
+  }
   */
+  var ret = new Object();
+  ret.result = true;
   var game = getGameById(gameid);
   if (game.players[game.playerPosInAction].name!=username || game.period!=action.period){
     return false;
@@ -322,12 +448,19 @@ function takeAction(username, gameid, action){
       }
       // choose
       game.players[game.playerPosInAction].role = game.rolesToChoose[i];
+      ret.message = game.players[game.playerPosInAction].name + ' chooses ' + game.rolesToChoose[i];
       game.rolesToChoose.splice(i, 1);
       // next one
       game.playerPosInAction = (playerPosInAction + 1) % game.players.length;
       if (game.playerPosInAction == game.kingPosition){ // finish
         endChooseRoles(game);
-        // TODO : beginPlayersRound(game);
+        beginPlayersRound(game);
+      }
+      break;
+    case 'PlayersRound':
+      switch(action.round){
+        case 'Action':
+          break;
       }
       break;
   }
