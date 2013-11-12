@@ -2,39 +2,11 @@ var CARDS = require('./soliddata').CARDS;
 var ROLES = require('./soliddata').ROLES;
 
 var games = [];
-var gameSeq = 1; // incresing sequence number of room id
+var gameSeq = 0; // incresing sequence number of room id
 
 exports.init = function(){
-  games = [
-/*
-    {
-      'id': 0,
-      'name': 'first room',
-      'timeout': 30,
-      'maxbuilding':8,
-      'players': [
-        {
-          'name': 'a',
-          'role': 'king',
-          'isIn': false,
-          'isKilled': false,
-          'cards': [],
-          'buildings': [],
-          'coins': 4
-        }
-      ],
-      'kingPosition': 0,
-      'onlookers': [],
-      'roleInAction': 'Thief',
-      'period': 'MoneyOrCard',
-      'rolesHidden': [],
-      'rolesShow': [],
-      'rolesToChoose': [],
-      'cardStack': [],
-      'cardDiscarded': []
-    }
-*/
-  ];
+  games = [];
+  gameSeq = 0;
 };
 
 exports.create = function(room){
@@ -61,6 +33,7 @@ exports.create = function(room){
     player.cards = new Array();
     player.buildings = new Array();
     player.coins = 2;
+    player.score = 0;
     game.players.push(player);
   }
   game.kingPosition = 0;
@@ -288,6 +261,15 @@ function nextPlayer(game){
   return false;
 }
 
+function isFinished(game){
+  for (i in game.players){
+    if (game.players[i].buildings.length >= game.maxbuilding){
+      return true;
+    }
+  }
+  return false;
+}
+
 function getGameStatusById(gameid, username){
   var game = getGameById(gameid);
   var status = new Object();
@@ -392,6 +374,7 @@ function getGameStatusById(gameid, username){
           return getGameStatusById(gameid, username);
           break;
         case 'Action':
+          // nothing to do?
           break;
         case 'Action-card':
           break;
@@ -399,36 +382,15 @@ function getGameStatusById(gameid, username){
           break;
       }
       break;
+    case 'End':
+      // TODO : calculate scores
+      break;
   }
   return status;
 }
 exports.getGameStatusById = getGameStatusById;
 
 function takeAction(username, gameid, action){
-  /*
-  action={
-  period: ChooseRole
-  roleChosen: Assassin
-  }
-  action={
-  period: PlayersRound
-  round: Action
-  choose: Money/Card
-  }
-  action={
-  period: PlayersRound
-  round: Action-card
-  choose: 神庙
-  }
-  action={
-  period: PlayersRound
-  round: Post-action
-  choose: Build/Skill/Building-skill
-  building: 神庙 [if choose=Build]
-  skill: Kill/Steal/Switch-card/Tax/Destroy[if choose=Skill] || 
-  target: role-name[if skill=Kill/Steal]/user-name[if skill=Switch-card]/{owner:username, building:神庙}[if skill=Destroy]
-  }
-  */
   var ret = new Object();
   ret.result = true;
   var game = getGameById(gameid);
@@ -438,6 +400,12 @@ function takeAction(username, gameid, action){
   var i, j;
   switch(action.period){
     case 'ChooseRole':
+      /*
+      action={
+      period: ChooseRole
+      roleChosen: Assassin
+      }
+      */
       for (i=0; i<game.rolesToChoose.length; ++i){
         if (game.rolesToChoose[i].name == action.roleChosen){
           break;
@@ -460,9 +428,131 @@ function takeAction(username, gameid, action){
     case 'PlayersRound':
       switch(action.round){
         case 'Action':
+        /*
+          action={
+          period: PlayersRound
+          round: Action
+          choose: Money/Card
+          }
+          */
+          switch(action.choose){
+            case 'Money':
+              game.players[game.playerPosInAction].coins += 2;
+              ret.message = username + ' takes 2 coins.';
+              if (game.players[game.playerPosInAction].role == 'Merchant'){
+                game.players[game.playerPosInAction].coins += 1;
+                ret.message += username + ' takes 1 coins.';
+              }
+              if (game.players[game.playerPosInAction].role == 'Architect'){
+                game.players[game.playerPosInAction].cards.push(game.cardStack.shift());
+                game.players[game.playerPosInAction].cards.push(game.cardStack.shift());
+                ret.message += username + ' takes 2 cards.';
+              }
+              game.round = 'Post-action';
+              break;
+            case 'Card':
+              game.round = 'Action-card';
+              ret.message = username + ' wants card(s).';
+              break;
+            default:
+              return false;
+          }
           break;
+        case 'Action-card':
+          /*
+          action={
+          period: PlayersRound
+          round: Action-card
+          choose: 神庙
+          }
+          */
+          if (action.choose == game.cardStack[0]){
+            game.players[game.playerPosInAction].cards.push(game.cardStack.shift());
+            game.cardDiscarded.push(game.cardStack.shift());
+          }
+          else if (action.choose == game.cardStack[1]){
+            game.cardDiscarded.push(game.cardStack.shift());            
+            game.players[game.playerPosInAction].cards.push(game.cardStack.shift());
+          }
+          else{
+            return false;
+          }
+          ret.message = username + ' takes 1 card.';
+          if (game.players[game.playerPosInAction].role == 'Merchant'){
+            game.players[game.playerPosInAction].coins += 1;
+            ret.message += username + ' takes 1 coins.';
+          }
+          if (game.players[game.playerPosInAction].role == 'Architect'){
+            game.players[game.playerPosInAction].cards.push(game.cardStack.shift());
+            game.players[game.playerPosInAction].cards.push(game.cardStack.shift());
+            ret.message += username + ' takes 2 cards.';
+          }
+          game.round = 'Post-action';
+          break;
+        case 'Post-action':
+          /*
+          action={
+          period: PlayersRound
+          round: Post-action
+          choose: Build/Skill/Building-skill
+          building: 神庙 [if choose=Build]
+          skill: Kill/Steal/Switch-card/Tax/Destroy[if choose=Skill] || 
+          target: role-name[if skill=Kill/Steal]/user-name[if skill=Switch-card]/{owner:username, building:神庙}[if skill=Destroy]
+          }
+          */
+          switch(action.choose){
+            case 'Build':
+              // check if has card
+              for (j=0; j<game.players[game.playerPosInAction].cards.length; ++j){
+                if (game.players[game.playerPosInAction].cards[j] == action.building){
+                  break;
+                }
+              }
+              if (j == game.players[game.playerPosInAction].cards.length){
+                return false;
+              }
+              // check if can build
+              for (i=0; i<game.players[game.playerPosInAction].postActionOptions.length; ++i){
+                if (game.players[game.playerPosInAction].postActionOptions[i].option == 'Build'){
+                  break;
+                }
+              }
+              if (i == game.players[game.playerPosInAction].postActionOptions.length){
+                return false;
+              }
+              // build
+              game.players[game.playerPosInAction].postActionOptions.shuffle(i, 1);
+              game.players[game.playerPosInAction].cards.shuffle(j, 1);
+              game.players[game.playerPosInAction].buildings.push(action.building);
+              ret.message = username + ' builds ' + action.building + '.';
+              break;
+            case 'Skill':
+              break;
+            case 'Building-skill':
+              break;
+            default:
+              return false;
+          }
+          break;
+        case 'Pass':
+          ret.message = username + ' pass.';
+          if (!nextPlayer(game)){
+            endPlayersRound(game);
+            if (isFinished(game)){
+              game.period = 'End';
+            }
+            else{
+              beginChooseRoles(game);              
+            }
+          }
+          break;
+        default:
+          return false;
       }
       break;
+    default:
+      return false;
   }
+  return ret;
 }
 exports.takeAction = takeAction;

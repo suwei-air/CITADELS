@@ -1,15 +1,3 @@
-/*
-Characters::
-
-Assassin
-Thief
-Magician
-King
-Bishop
-Merchant
-Architect
-Warlord
-*/
 exports.ROLES = [
   { 'name': 'Assassin',	'order': 1 },
   { 'name': 'Thief',	'order': 2 },
