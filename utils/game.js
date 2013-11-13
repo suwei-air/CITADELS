@@ -502,15 +502,6 @@ function takeAction(username, gameid, action){
           */
           switch(action.choose){
             case 'Build':
-              // check if has card
-              for (j=0; j<game.players[game.playerPosInAction].cards.length; ++j){
-                if (game.players[game.playerPosInAction].cards[j] == action.building){
-                  break;
-                }
-              }
-              if (j == game.players[game.playerPosInAction].cards.length){
-                return false;
-              }
               // check if can build
               for (i=0; i<game.players[game.playerPosInAction].postActionOptions.length; ++i){
                 if (game.players[game.playerPosInAction].postActionOptions[i].option == 'Build'){
@@ -520,6 +511,15 @@ function takeAction(username, gameid, action){
               if (i == game.players[game.playerPosInAction].postActionOptions.length){
                 return false;
               }
+              // check if has card
+              for (j=0; j<game.players[game.playerPosInAction].cards.length; ++j){
+                if (game.players[game.playerPosInAction].cards[j] == action.building){
+                  break;
+                }
+              }
+              if (j == game.players[game.playerPosInAction].cards.length){
+                return false;
+              }
               // build
               game.players[game.playerPosInAction].postActionOptions.shuffle(i, 1);
               game.players[game.playerPosInAction].cards.shuffle(j, 1);
@@ -527,8 +527,186 @@ function takeAction(username, gameid, action){
               ret.message = username + ' builds ' + action.building + '.';
               break;
             case 'Skill':
+              // check if has skill
+              for (i=0; i<game.players[game.playerPosInAction].postActionOptions.length; ++i){
+                if (game.players[game.playerPosInAction].postActionOptions[i].option == action.skill){
+                  break;
+                }
+              }
+              if (i == game.players[game.playerPosInAction].postActionOptions.length){
+                return false;
+              }
+              // do the skill
+              switch(action.skill){
+                case 'Kill':
+                  // to kill action.target
+                  j = getPlayerPosByRole(game, action.target);
+                  if (j === false || action.target == 'Assassin'){
+                    return false
+                  }
+                  game.players[j].isKilled = true;
+                  ret.message = username + ' kills ' + action.target;
+                  break;
+                case 'Steal':
+                  // to steal action.target
+                  j = getPlayerPosByRole(game, action.target);
+                  if (j === false ||
+                    action.target == 'Assassin' ||
+                    action.target == 'Thief' ||
+                    game.players[j].isKilled){
+                    return false
+                  }
+                  game.players[j].isStolen = true;
+                  ret.message = username + ' steals ' + action.target;
+                  break;
+                case 'Switch-card':
+                  // to switch card with action.target or cardStack(action.target is undefined)
+                  if (typeof(action.target)=='undefined'){
+                    // switch with cardStack
+                    for (j=0; j<game.players[game.playerPosInAction].cards.length; ++j){
+                      game.cardStack.push(game.players[game.playerPosInAction].cards.shift());
+                      game.players[game.playerPosInAction].cards.push(game.cardStack.shift());
+                    }
+                    ret.message = username + ' change card(s) with card stack.';
+                  }
+                  else{
+                    for (j=0; j<game.players.length; ++j){
+                      if (game.players[j].name == action.target){
+                        break;
+                      }
+                    }
+                    if (j==game.players.length || action.target==username){
+                      return false;
+                    }
+                    var cardTemp = game.players[game.playerPosInAction].cards;
+                    game.players[game.playerPosInAction].cards = game.players[j].cards;
+                    game.players[j].cards = cardTemp;
+                    ret.message = username + ' change card(s) with ' + action.target;
+                  }
+                case 'Tax':
+                  // get tax
+                  var taxColor, income = 0;
+                  switch(game.players[game.playerPosInAction].role){
+                    case 'King':
+                      taxColor = 'Golden';
+                      break;
+                    case 'Bishop':
+                      taxColor = 'Green';
+                      break;
+                    case 'Merchant':
+                      taxColor = 'Blue';
+                      break;
+                    case 'Warlord':
+                      taxColor = 'Red';
+                      break;
+                    default:
+                      return false;
+                  }
+                  for (j=0; j<game.players[game.playerPosInAction].buildings.length; ++j){
+                    if (game.players[game.playerPosInAction].buildings[j].color == taxColor){
+                      ++income;
+                    }
+                  }
+                  game.players[game.playerPosInAction].coins += income;
+                  ret.message = username + ' got ' + income + ' coin(s) for tax.';
+                  break;
+                case 'Destroy':
+                  // destroy building(s)
+                  // find target's owner
+                  for (j=0; j<game.players.length; ++j){
+                    if (game.players[j].name == action.target.owner){
+                      break;
+                    }
+                  }
+                  if (j==game.players.length || game.players[j].role=='Bishop'){
+                    return false;
+                  }
+                  if (action.target.building.name == '堡垒'){
+                    return false
+                  }
+                  var targetPlayer = game.players[j];
+                  if (targetPlayer.buildings.length>=8){
+                    return false;
+                  }
+                  // find target building
+                  for (j=0; j<targetPlayer.buildings.length; ++j){
+                    if (targetPlayer.buildings[j] == action.target.building){
+                      break;
+                    }
+                  }
+                  if (j == targetPlayer.buildings.length){
+                    return false;
+                  }
+                  var cost, k;
+                  // if target.owner has 长城
+                  for (k=0; k<targetPlayer.buildings.length; ++k){
+                    if (targetPlayer.buildings[k].name == '长城'){
+                      break;
+                    }
+                  }
+                  if (k == targetPlayer.buildings.length){
+                    cost = targetPlayer.buildings[j].cost-1;
+                  }
+                  else{
+                    cost = targetPlayer.buildings[j].cost;
+                  }
+                  if (game.players[game.playerPosInAction].coins < cost){
+                    return false;
+                  }
+                  // destroy
+                  game.players[game.playerPosInAction].coins -= cost;
+                  targetPlayer.buildings.shuffle(j, 1);
+                  ret.message = username + ' destroy ' + action.target.owner + '\'s ' + action.target.building.name;
+                  // TODO : if someone else has built 墓地
+                  break;
+                default:
+                  return false;
+              }
+              game.players[game.playerPosInAction].options.shuffle(i, 1);
               break;
             case 'Building-skill':
+              // check if has skill
+              for (i=0; i<game.players[game.playerPosInAction].postActionOptions.length; ++i){
+                if (game.players[game.playerPosInAction].postActionOptions[i].option == 'Building-skill' &&
+                  game.players[game.playerPosInAction].postActionOptions[i].building == action.building){
+                  break;
+                }
+              }
+              if (i == game.players[game.playerPosInAction].postActionOptions.length){
+                return false;
+              }
+              // TODO : what-if Warlord destroyed his own 实验室/铁匠铺
+              // do the building-skill
+              switch(action.building){
+                case '实验室':
+                  // dispose action.target
+                  for (j=0; j<game.players[game.playerPosInAction].cards.length; ++j){
+                    if (game.players[game.playerPosInAction].cards[j] == action.target){
+                      break;
+                    }
+                  }
+                  if (j==game.players[game.playerPosInAction].cards.length){
+                    return false;
+                  }
+                  ret.message = username + ' used 实验室 to abandon card ' + action.target.name + ' and get 1 coin.';
+                  game.cardDiscarded.push(game.players[game.playerPosInAction].cards[j]);
+                  game.players[game.playerPosInAction].cards.shuffle(j, 1);
+                  game.players[game.playerPosInAction].coins += 1;
+                  break;
+                case '铁匠铺':
+                  if (game.players[game.playerPosInAction].coins < 2){
+                    return false;
+                  }
+                  game.players[game.playerPosInAction].coins -= 2;
+                  game.players[game.playerPosInAction].cards.push(game.cardStack.shift());
+                  game.players[game.playerPosInAction].cards.push(game.cardStack.shift());
+                  game.players[game.playerPosInAction].cards.push(game.cardStack.shift());
+                  ret.message = username + ' paid 2 conis and got 3 cards.';
+                  break;
+                default:
+                  return false;
+              }
+              game.players[game.playerPosInAction].options.shuffle(i, 1);
               break;
             default:
               return false;
@@ -542,7 +720,7 @@ function takeAction(username, gameid, action){
               game.period = 'End';
             }
             else{
-              beginChooseRoles(game);              
+              beginChooseRoles(game);
             }
           }
           break;

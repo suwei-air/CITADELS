@@ -13,6 +13,7 @@ exports.CARDS = [
   {
     'name': '神庙',
     'number': 3,
+    'color': 'Blue', // Golden, Red, Green, Blue, Purple
     'cost': 1
   },
   {
