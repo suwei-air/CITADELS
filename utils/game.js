@@ -657,6 +657,19 @@ function takeAction(username, gameid, action){
                   game.players[game.playerPosInAction].coins -= cost;
                   targetPlayer.buildings.shuffle(j, 1);
                   ret.message = username + ' destroy ' + action.target.owner + '\'s ' + action.target.building.name;
+                  // remove building-skill of his own 实验室/铁匠铺
+                  if (username==action.target.owner &&
+                    (action.target.building.name=='实验室' || action.target.building.name=='铁匠铺')){
+                    for (j=0; j<game.players[game.playerPosInAction].postActionOptions.length; ++j){
+                      if (game.players[game.playerPosInAction].postActionOptions[j].option == 'Building-skill' &&
+                        game.players[game.playerPosInAction].postActionOptions[j].building == action.target.building.name){
+                        break;
+                      }
+                    }
+                    if (j != game.players[game.playerPosInAction].postActionOptions.length){
+                      game.players[game.playerPosInAction].options.shuffle(j, 1);
+                    }
+                  }
                   // TODO : if someone else has built 墓地
                   break;
                 default:
@@ -675,7 +688,6 @@ function takeAction(username, gameid, action){
               if (i == game.players[game.playerPosInAction].postActionOptions.length){
                 return false;
               }
-              // TODO : what-if Warlord destroyed his own 实验室/铁匠铺
               // do the building-skill
               switch(action.building){
                 case '实验室':
