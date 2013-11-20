@@ -1,7 +1,7 @@
 #game-display, #game-info{
 	display: block;
 	margin: 15px;
-	padding: 12px;
+	padding: 0px;
 	border: 3px solid white;
 /*	border-radius: 10px;
 	-moz-border-radius: 10px;*/
@@ -35,7 +35,7 @@
 	width: 600px;
 }
 
-ul{
+#choose-role > ul{
 	border: 1px solid white;
 	border-radius: 10px;
 	-moz-border-radius: 10px;
@@ -43,7 +43,7 @@ ul{
 	padding: 0px;
 }
 
-li{
+#choose-role > ul > li{
 	display: inline-block;
 	width: 132px;
 	text-align: center;
@@ -68,9 +68,9 @@ li{
   style of dialog to act during game
 */
 #act{
-	/*position: absolute;*/
-	visibility: visible;
-	z-index: 2;
+	position: absolute;
+	visibility: hidden;
+	z-index: -1;
 	margin: auto;
 	margin-top: 200px;
 	width: 200px;
@@ -95,4 +95,80 @@ li{
 }
 /*
   end style of game-act
+*/
+
+/*
+  style of dialog to choose card or coins
+*/
+#cardorM{
+	position: absolute;
+	visibility: hidden;
+	z-index: 2;
+	margin: auto;
+	margin-top: 200px;
+	width: 350px;
+	border: 1px solid white;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	padding: 0px;
+}
+
+#cardorM > ul{
+	text-align: center;
+	padding: 0px;
+}
+
+.cardorM{
+	display: inline-block;
+	width: 132px;
+	margin: auto;
+	padding: 0px;
+}
+
+.cardorM> img{
+	border: 3px solid white;
+	border-radius: 10px;
+}
+
+.cardorM > img:hover{
+	border: 3px solid blue;
+}
+/*
+  end style of cardorM
+*/
+
+/*
+  style of showers to display players
+*/
+#players{
+	width: 100%;
+	margin: 0px;
+	padding: 5px;
+	text-align: center;
+}
+
+#players > ul{
+	display: block;
+}
+
+#line2 > li, #line3 > li{
+	float: left;
+}
+
+#line2 > li + li, #line3 > li + li{
+	float: right;
+}
+
+.oneplayer{
+	display: inline-block;
+}
+
+.oneplayer > div{
+	padding: 0px;
+	width: 126px;
+	height: 150px;
+	border: 1px solid white;
+}
+/*
+  end style of players
 */
