@@ -5,28 +5,146 @@
 	border: 3px solid white;
 /*	border-radius: 10px;
 	-moz-border-radius: 10px;*/
+	height: 820px;
+	float: left;
 }
 
 #game-display{
 	width: 70%;
 	min-width: 700px;
-	height: 700px;
-	float: left;
 }
 
 #game-info{
 	width: 20%;
 	min-width: 200px;
-	height: 700px;
+}
+
+/*
+  style of showers to display players
+*/
+#players{
+	width: 100%;
+	margin: 0px;
+	padding: 0px;
+	text-align: center;
+}
+
+#players > ul{
+	display: block;
+	height: 170px;
+	padding: 0px 10px;
+}
+
+#line2 > li, #line3 > li{
 	float: left;
 }
 
+#line2 > li + li, #line3 > li + li{
+	float: right;
+}
+
+.oneplayer{
+	display: inline-block;
+}
+
+.oneplayer > div{
+	padding: 0px;
+	width: 126px;
+	height: 150px;
+	border: 1px solid white;
+}
+/*
+  end style of players
+*/
+
+/*
+  style of buildings
+*/
+
+#buildings{
+	margin: 0px;
+	padding: 0px;
+	text-align: center;
+	width: 100%;
+}
+
+#buildings img{
+	display: inline-block;
+	width: 70px;
+	height: 100px;
+	padding: 0px;
+	margin: 0px 5px;
+	border: 1px solid white;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+}
+
+/*
+  end style of buildings
+*/
+
+/*
+  style of player-info
+*/
+
+#player-info{
+	margin: 0px;
+	margin-top: 10px;
+	padding: 0px;
+	width: 100%;
+	height: 120px;
+	border-top: 2px solid white;
+	border-bottom: 2px solid white;
+	text-align: left;
+}
+
+#player-info > *{
+	display: inline-block;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+
+#player-info > img{
+	width: 100px;
+	height: 120px;
+	/*border-right: 1px solid white;*/
+}
+
+#coins{
+	width: 100px;
+	height: 120px;
+	border: 1px solid white;
+/*	border-left: 1px solid white;
+	border-right: 1px solid white;*/
+	text-align: center;
+}
+
+#coins > img{
+	width: 100px;
+	height: 100px;
+}
+
+#hand{
+}
+
+#hand > img{
+	width: 70px;
+	height: 100px;
+	margin: 10px 5px;
+}
+
+/*
+  end style of player-info
+*/
 
 /*
   style of dialog to choose role before game beginning
 */
 #choose-role{
 	position: absolute;
+	top: 0px;
+	left: 0px;
 	visibility: hidden;
 	z-index: -1;
 	margin-left: auto;
@@ -69,6 +187,8 @@
 */
 #act{
 	position: absolute;
+	left: 0px;
+	top: 0px;
 	visibility: hidden;
 	z-index: -1;
 	margin: auto;
@@ -102,8 +222,10 @@
 */
 #cardorM{
 	position: absolute;
+	left: 0px;
+	top: 0px;
 	visibility: hidden;
-	z-index: 2;
+	z-index: -1;
 	margin: auto;
 	margin-top: 200px;
 	width: 350px;
@@ -137,38 +259,13 @@
   end style of cardorM
 */
 
-/*
-  style of showers to display players
-*/
-#players{
-	width: 100%;
-	margin: 0px;
-	padding: 5px;
-	text-align: center;
-}
-
-#players > ul{
-	display: block;
-}
-
-#line2 > li, #line3 > li{
-	float: left;
-}
-
-#line2 > li + li, #line3 > li + li{
-	float: right;
-}
-
-.oneplayer{
-	display: inline-block;
-}
-
-.oneplayer > div{
+#middle{
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 70%;
+	min-width: 700px;
+	margin: 18px;
 	padding: 0px;
-	width: 126px;
-	height: 150px;
-	border: 1px solid white;
 }
-/*
-  end style of players
-*/
+
