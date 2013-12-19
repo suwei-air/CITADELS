@@ -56,7 +56,7 @@ function shuffle(arr){
   var ret = [];
   var pos;
   while (arr.length > 0){
-    pos = round(random()*arr.length);
+    pos = Math.floor(Math.random()*arr.length);
     ret.push(arr[pos]);
     arr.splice(pos, 1);
   }
@@ -202,7 +202,8 @@ function endPlayersRound(game){
 
 function start(gameid){
   var game = getGameById(gameid);
-  game.kingPosition = round(random()*game.players.length);
+  game.kingPosition = Math.floor(Math.random()*game.players.length);
+  game.playerPosInAction = game.kingPosition;
   game.isStarted = true;
   // add and shuffle cards
   var i, j;
